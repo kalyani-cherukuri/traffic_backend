@@ -2,6 +2,8 @@ import React, { Suspense } from 'react'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider, useAuth } from './context/AuthContext'
 import ProtectedRoute from './routes/ProtectedRoute'
+import { ToastContainer } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
 
 const LoginPage = React.lazy(() => import('./pages/auth/Login'))
 const CitizenDashboard = React.lazy(() => import('./pages/citizen/CitizenDashboard'))
@@ -73,6 +75,7 @@ export default function App() {
 
             <Route path="/" element={<RoleRedirect />} />
           </Routes>
+          <ToastContainer position="top-right" />
         </Suspense>
       </BrowserRouter>
     </AuthProvider>
