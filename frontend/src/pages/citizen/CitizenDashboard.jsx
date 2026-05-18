@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from 'react'
 import Layout from '../../components/Layout'
 import api from '../../api'
+import { createVehicle } from '../../services/vehicles'
+import { createPayment, getPayments } from '../../services/payments'
+import { createDispute } from '../../services/disputes'
 import StatusBadge from '../../components/StatusBadge'
 import { toast } from 'react-toastify'
 
@@ -9,9 +12,9 @@ function RegisterVehicleForm({ onCreated }) {
   const [model, setModel] = useState('')
   const submit = async (e) => {
     e.preventDefault()
-    if (!plate) return toast.error('Plate is required')
+    if (!plate) return toast.error('Vehicle number is required')
     try {
-      await api.post('/vehicles', { plateNumber: plate, model })
+      await createVehicle({ vehicleNumber: plate, vehicleType: model })
       toast.success('Vehicle registered')
       setPlate('')
       setModel('')
@@ -50,10 +53,37 @@ function TicketsTable() {
         </thead>
         <tbody>
           {tickets.map(t=> (
-            <tr key={t.id} className="border-t"><td className="py-2">{t.id}</td><td>{t.vehicle?.plateNumber}</td><td>{t.amount}</td><td><StatusBadge status={t.status} /></td></tr>
+            <tr key={t.id} className="border-t">
+              <td className="py-2">{t.id}</td>
+              <td>{t.vehicle?.vehicleNumber}</td>
+              <td>{t.amount}</td>
+              <td><StatusBadge status={t.status} /></td>
+              <td className="py-2">
+                {t.status === 'PENDING_PAYMENT' && (
+                  <button onClick={async()=>{ try{ await createPayment({ ticketId: t.id }); toast.success('Payment initiated'); fetch() }catch(e){toast.error('Payment failed')}}} className="bg-green-600 text-white px-2 py-1 rounded">Pay</button>
+                )}
+                <button onClick={async()=>{ const reason = prompt('Enter dispute reason'); if(reason){ try{ await createDispute({ ticketId: t.id, disputeReason: reason }); toast.success('Dispute raised'); fetch() }catch(e){toast.error('Dispute failed')}}}} className="ml-2 bg-yellow-600 text-white px-2 py-1 rounded">Dispute</button>
+              </td>
+            </tr>
           ))}
         </tbody>
       </table>
+    </div>
+  )
+}
+
+function PaymentsHistory(){
+  const [payments, setPayments] = useState([])
+  const fetchPayments = async ()=>{
+    try{ const res = await getPayments(); setPayments(res.data||[]) }catch(e){ toast.error('Failed to load payments') }
+  }
+  useEffect(()=>{fetchPayments()}, [])
+  return (
+    <div className="bg-white p-4 rounded shadow">
+      <h3 className="font-semibold mb-2">Payment History</h3>
+      <ul>
+        {payments.map(p=> <li key={p.id} className="border-b py-2">{p.id} - {p.amount} - <StatusBadge status={p.status} /></li>)}
+      </ul>
     </div>
   )
 }
@@ -67,6 +97,7 @@ export default function CitizenDashboard() {
         </div>
         <div className="md:col-span-2 space-y-4">
           <TicketsTable />
+          <PaymentsHistory />
         </div>
       </div>
     </Layout>

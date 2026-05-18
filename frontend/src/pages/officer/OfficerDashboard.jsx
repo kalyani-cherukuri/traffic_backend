@@ -11,7 +11,7 @@ function IssueTicketForm({ onIssued }) {
     e.preventDefault()
     if (!vehicleId || !violationId) return toast.error('Vehicle and violation required')
     try {
-      await api.post('/tickets', { vehicleId, violationId, location })
+      await api.post('/tickets', { vehicleId, violationTypeId: violationId, violationLocation: location })
       toast.success('Ticket issued')
       onIssued && onIssued()
     } catch (err) {

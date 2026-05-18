@@ -18,12 +18,17 @@ export function AuthProvider({ children }) {
     else localStorage.removeItem('user')
   }, [user])
 
-  const loginWithToken = (token) => {
+  const loginWithToken = (token, role, email) => {
     if (!token) return
     localStorage.setItem('token', token)
     try {
-      const decoded = jwtDecode(token)
-      const u = { role: decoded.role || decoded.authorities || 'CITIZEN', name: decoded.sub }
+      let u = null
+      if (role) {
+        u = { role, email }
+      } else {
+        const decoded = jwtDecode(token)
+        u = { role: decoded.role || decoded.authorities || 'CITIZEN', email: decoded.sub }
+      }
       setUser(u)
     } catch (e) {
       setUser(null)

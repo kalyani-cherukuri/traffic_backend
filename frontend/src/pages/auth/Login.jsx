@@ -15,10 +15,12 @@ export default function Login() {
     e.preventDefault()
     if (!email || !password) return toast.error('Email and password required')
     try {
-      const res = await api.post('/auth/login', { username: email, password })
-      const token = res?.data?.token || res?.data?.accessToken
+      const res = await api.post('/auth/login', { email, password })
+      const token = res?.data?.token
+      const role = res?.data?.role
+      const userEmail = res?.data?.email || email
       if (!token) throw new Error('No token returned')
-      loginWithToken(token)
+      loginWithToken(token, role, userEmail)
       toast.success('Logged in')
       // redirect by role after login
       navigate('/')
