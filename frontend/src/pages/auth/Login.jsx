@@ -43,8 +43,9 @@ export default function Login() {
             <label className="block text-sm">Password</label>
             <input type="password" className="w-full border px-2 py-1 rounded" value={password} onChange={e=>setPassword(e.target.value)} />
           </div>
-          <div className="text-right">
+          <div className="flex justify-between items-center">
             <button className="bg-blue-600 text-white px-4 py-1 rounded">Login</button>
+            <button type="button" onClick={()=>navigate('/register')} className="text-blue-600 underline text-sm">Create account</button>
           </div>
         </form>
       </div>

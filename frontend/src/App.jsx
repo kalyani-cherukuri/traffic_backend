@@ -6,6 +6,7 @@ import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 
 const LoginPage = React.lazy(() => import('./pages/auth/Login'))
+const RegisterPage = React.lazy(() => import('./pages/auth/Register'))
 const CitizenDashboard = React.lazy(() => import('./pages/citizen/CitizenDashboard'))
 const OfficerDashboard = React.lazy(() => import('./pages/officer/OfficerDashboard'))
 const ReviewDashboard = React.lazy(() => import('./pages/review/ReviewDashboard'))
@@ -36,6 +37,7 @@ export default function App() {
         <Suspense fallback={<div className="p-4">Loading...</div>}>
           <Routes>
             <Route path="/login" element={<LoginPage />} />
+            <Route path="/register" element={<RegisterPage />} />
 
             <Route
               path="/citizen/*"
