@@ -1,6 +1,7 @@
 import axios from 'axios'
 
-const API_BASE = process.env.REACT_APP_API_URL || 'http://localhost:8080/api'
+// Vite exposes env vars via import.meta.env. Use VITE_API_URL to override.
+const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8080/api'
 
 const api = axios.create({
   baseURL: API_BASE,
