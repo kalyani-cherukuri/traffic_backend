@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import Layout from '../../components/Layout'
+import CreateViolationForm from '../../components/CreateViolationForm'
 import { toast } from 'react-toastify'
 import { getVehicles } from '../../services/vehicles'
 import { getViolations } from '../../services/violations'
@@ -7,21 +8,16 @@ import { createTicket, getTickets } from '../../services/tickets'
 import StatusBadge from '../../components/StatusBadge'
 import { TICKET_STATUS } from '../../constants/statuses'
 
-function IssueTicketForm({ onIssued }) {
+function IssueTicketForm({ onIssued, violations }) {
   const [vehicleId, setVehicleId] = useState('')
   const [violationId, setViolationId] = useState('')
   const [location, setLocation] = useState('')
   const [vehicles, setVehicles] = useState([])
-  const [violations, setViolations] = useState([])
   useEffect(()=>{
     (async ()=>{
       try{
         const v = await getVehicles();
         setVehicles(v.data || [])
-      }catch(e){/* ignore */}
-      try{
-        const vs = await getViolations();
-        setViolations(vs.data || [])
       }catch(e){/* ignore */}
     })()
   }, [])
@@ -140,10 +136,26 @@ function ViolationHistory({ refreshKey }){
 
 export default function OfficerDashboard(){
   const [refreshKey, setRefreshKey] = useState(0)
+  const [violations, setViolations] = useState([])
+  
+  useEffect(() => {
+    (async () => {
+      try {
+        const vs = await getViolations()
+        setViolations(vs.data || [])
+      } catch (e) {
+        /* ignore */
+      }
+    })()
+  }, [refreshKey])
+  
   return (
     <Layout>
       <div className="grid md:grid-cols-2 gap-4">
-        <IssueTicketForm onIssued={()=>setRefreshKey(k=>k+1)} />
+        <div className="space-y-4">
+          <CreateViolationForm onViolationCreated={() => setRefreshKey(k => k + 1)} />
+          <IssueTicketForm onIssued={() => setRefreshKey(k => k + 1)} violations={violations} />
+        </div>
         <ViolationHistory refreshKey={refreshKey} />
       </div>
     </Layout>
