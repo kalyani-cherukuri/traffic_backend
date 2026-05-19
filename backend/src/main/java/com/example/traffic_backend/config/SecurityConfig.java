@@ -47,11 +47,11 @@ public class SecurityConfig {
                         .hasRole("CITIZEN")
 
                         .requestMatchers("/api/vehicles/**")
-                        .hasAnyRole("ADMIN", "CITIZEN")
+                        .hasAnyRole("ADMIN", "CITIZEN", "TRAFFIC_OFFICER")
                         .requestMatchers("/api/users/**")
                         .permitAll()
                         .requestMatchers(HttpMethod.POST,"/api/violations")
-                        .hasRole("ADMIN")
+                        .hasAnyRole("ADMIN", "TRAFFIC_OFFICER")
                         .requestMatchers(HttpMethod.POST,
         "/api/payments")
 .hasRole("CITIZEN")
